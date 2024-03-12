@@ -155,7 +155,7 @@ async function fetchUsage() {
     // 获取已使用量
     const useResponse = await options.fetch(urlUsage, { headers })
     if (!useResponse.ok)
-      throw new Error('获取使用量失败')
+      throw new Error('Fail to get usage data')
     const usageData = await useResponse.json() as UsageResponse
     const usage = Math.round(usageData.total_usage) / 100
     return Promise.resolve(usage ? `$${usage}` : '-')
