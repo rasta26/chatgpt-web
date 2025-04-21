@@ -15,9 +15,12 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Set node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 18.x
+
+      - name: update
+        run: pnpm install --no-frozen-lockfile
 
       - name: Setup
         run: npm i -g @antfu/ni
@@ -25,8 +28,8 @@ jobs:
       - name: Install
         run: nci
 
-      - name: update
-        run: pnpm install --no-frozen-lockfile
+      # - name: update
+      #   run: pnpm install --no-frozen-lockfile
 
       - name: Lint
         run: nr lint:fix
@@ -36,7 +39,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Set node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 18.x
 
