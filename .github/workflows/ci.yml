@@ -17,7 +17,7 @@ jobs:
       - name: Set node
         uses: actions/setup-node@v4
         with:
-          node-version: 18.x
+          node-version: 20
 
       # - name: update
       #   run: pnpm install --no-frozen-lockfile
@@ -41,7 +41,7 @@ jobs:
       - name: Set node
         uses: actions/setup-node@v4
         with:
-          node-version: 18.x
+          node-version: 20
 
       - name: Setup
         run: npm i -g @antfu/ni
