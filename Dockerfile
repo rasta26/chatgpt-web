@@ -1,5 +1,6 @@
 # build front-end
-FROM node:lts-alpine AS frontend
+# FROM node:lts-alpine AS frontend
+FROM node:current AS frontend
 
 RUN npm install pnpm -g
 
