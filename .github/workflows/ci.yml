@@ -19,8 +19,8 @@ jobs:
         with:
           node-version: 18.x
 
-      - name: update
-        run: pnpm install --no-frozen-lockfile
+      # - name: update
+      #   run: pnpm install --no-frozen-lockfile
 
       - name: Setup
         run: npm i -g @antfu/ni
