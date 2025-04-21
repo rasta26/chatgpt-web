@@ -19,17 +19,15 @@ jobs:
         with:
           node-version: 20
 
-      # - name: update
-      #   run: pnpm install --no-frozen-lockfile
 
       - name: Setup
         run: npm i -g @antfu/ni
 
+      - name: update
+        run: pnpm install --no-frozen-lockfile
+
       - name: Install
         run: nci
-
-      # - name: update
-      #   run: pnpm install --no-frozen-lockfile
 
       - name: Lint
         run: nr lint:fix
