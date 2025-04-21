@@ -139,7 +139,7 @@ async function fetchUsage() {
 
   const [startDate, endDate] = formatDate()
 
-  // 每月使用量
+  // Monthly usage
   const urlUsage = `${API_BASE_URL}/v1/dashboard/billing/usage?start_date=${startDate}&end_date=${endDate}`
 
   const headers = {
@@ -152,7 +152,7 @@ async function fetchUsage() {
   setupProxy(options)
 
   try {
-    // 获取已使用量
+    // Get the amount used
     const useResponse = await options.fetch(urlUsage, { headers })
     if (!useResponse.ok)
       throw new Error('Fail to get usage data')
