@@ -17,7 +17,8 @@ COPY . /app
 RUN pnpm run build
 
 # build backend
-FROM node:lts-alpine as backend
+# FROM node:lts-alpine as backend
+FROM node:current as backend
 
 RUN npm install pnpm -g
 
@@ -34,7 +35,8 @@ COPY /service /app
 RUN pnpm build
 
 # service
-FROM node:lts-alpine
+# FROM node:lts-alpine
+FROM node:current
 
 RUN npm install pnpm -g
 
