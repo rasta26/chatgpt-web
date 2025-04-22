@@ -43,10 +43,11 @@ const inputRef = ref<Ref | null>(null)
 // 添加PromptStore
  const promptStore = usePromptStore()
 
-// 使用storeToRefs，保证store修改后，联想部分能够重新渲染
-const { promptList: promptTemplate } = storeToRefs<any>(promptStore)
+	
+// se storeToRefs to ensure that the associated part can be re-rendered after the store is modified
+//const { promptList: promptTemplate } = storeToRefs<any>(promptStore)
 
-// 未知原因刷新页面，loading 状态不会重置，手动重置
+// Refresh the page for unknown reasons, the loading status will not reset, reset manually
 dataSources.value.forEach((item, index) => {
   if (item.loading)
     updateChatSome(+uuid, index, { loading: false })
