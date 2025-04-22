@@ -46,7 +46,12 @@ const inputRef = ref<Ref | null>(null)
 	
 // se storeToRefs to ensure that the associated part can be re-rendered after the store is modified
 // const { promptList: promptTemplate } = storeToRefs<any>(promptStore)
-const { promptList: promptTemplate } = storeToRefs(promptStore);
+type PromptTemplateItem = {
+  key: string;
+  value: string;
+};
+
+const { promptList: promptTemplate } = storeToRefs<Ref<PromptTemplateItem[]>>(promptStore);
 // Refresh the page for unknown reasons, the loading status will not reset, reset manually
 dataSources.value.forEach((item, index) => {
   if (item.loading)
@@ -414,27 +419,26 @@ function handleStop() {
 // Ideally, the key should be used as the index item, but the official renderOption will have problems, so the value needs to be reversed to renderLabel.
 const searchOptions = computed(() => {
   if (prompt.value.startsWith('/')) {
-    return promptTemplate.value.filter((item: { key: string }) => item.key.toLowerCase().includes(prompt.value.substring(1).toLowerCase())).map((obj: { value: any }) => {
-      return {
-        label: obj.value,
-        value: obj.value,
-      }
-    })
+    return promptTemplate.value
+      .filter((item) => item.key.toLowerCase().includes(prompt.value.substring(1).toLowerCase()))
+      .map((item) => ({
+        label: item.value,
+        value: item.value,
+      }));
   }
   else {
-    return []
+    return [];
   }
-})
+});
 
 // value reverse rendering key
 const renderOption = (option: { label: string }) => {
-  for (const i of promptTemplate.value) {
-    if (i.value === option.label)
-      return [i.key]
+  for (const item of promptTemplate.value) {
+    if (item.value === option.label) return [item.key];
   }
-  return []
-}
-
+  return [];
+};
+	
 const placeholder = computed(() => {
   if (isMobile.value)
     return t('chat.placeholderMobile')
