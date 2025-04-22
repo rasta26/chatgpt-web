@@ -62,6 +62,8 @@ export default {
     role: 'Role',
     temperature: 'Temperature',
     top_p: 'Top_p',
+		presence_penalty: 'Presence Penalty',
+    frequency_penalty: 'Frequency Penalty',
     resetUserInfo: 'Reset UserInfo',
     chatHistory: 'ChatHistory',
     theme: 'Theme',
