@@ -23,7 +23,7 @@ router.post('/chat-process', [auth, limiter], async (req, res) => {
   res.setHeader('Content-type', 'application/octet-stream')
 
   try {
-    const { prompt, options = {}, systemMessage, temperature, top_p } = req.body as RequestProps
+    const { prompt, options = {}, systemMessage, temperature, top_p, presence_penalty, frequency_penalty } = req.body as RequestProps
     let firstChunk = true
     await chatReplyProcess({
       message: prompt,
@@ -73,7 +73,7 @@ router.post('/verify', async (req, res) => {
       throw new Error('Secret key is empty')
 
     if (process.env.AUTH_SECRET_KEY !== token)
-      throw new Error('密钥无效 | Secret key is invalid')
+      throw new Error('Invalid key | Secret key is invalid')
 
     res.send({ status: 'Success', message: 'Verify successfully', data: null })
   }
