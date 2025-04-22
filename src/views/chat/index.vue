@@ -2,7 +2,7 @@
 import type { Ref } from 'vue'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { storeToRefs } from 'pinia'
+// import { storeToRefs } from 'pinia'
 import { NAutoComplete, NButton, NInput, useDialog, useMessage } from 'naive-ui'
 import html2canvas from 'html2canvas'
 import { Message } from './components'
@@ -41,10 +41,10 @@ const loading = ref<boolean>(false)
 const inputRef = ref<Ref | null>(null)
 
 // 添加PromptStore
-const promptStore = usePromptStore()
+// const promptStore = usePromptStore()
 
 // 使用storeToRefs，保证store修改后，联想部分能够重新渲染
-// const { promptList: promptTemplate } = storeToRefs<any>(promptStore)
+const { promptList: promptTemplate } = storeToRefs<any>(promptStore)
 
 // 未知原因刷新页面，loading 状态不会重置，手动重置
 dataSources.value.forEach((item, index) => {
@@ -408,9 +408,9 @@ function handleStop() {
   }
 }
 
-// 可优化部分
-// 搜索选项计算，这里使用value作为索引项，所以当出现重复value时渲染异常(多项同时出现选中效果)
-// 理想状态下其实应该是key作为索引项,但官方的renderOption会出现问题，所以就需要value反renderLabel实现
+// Optimizable parts
+// Search option calculation, here use value as index item, so when duplicate value appears, rendering is abnormal (multiple items appear selected at the same time)
+// Ideally, the key should be used as the index item, but the official renderOption will have problems, so the value needs to be reversed to renderLabel.
 const searchOptions = computed(() => {
   if (prompt.value.startsWith('/')) {
     return promptTemplate.value.filter((item: { key: string }) => item.key.toLowerCase().includes(prompt.value.substring(1).toLowerCase())).map((obj: { value: any }) => {
@@ -425,7 +425,7 @@ const searchOptions = computed(() => {
   }
 })
 
-// value反渲染key
+// value reverse rendering key
 const renderOption = (option: { label: string }) => {
   for (const i of promptTemplate.value) {
     if (i.value === option.label)
