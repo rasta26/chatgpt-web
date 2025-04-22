@@ -45,8 +45,8 @@ const inputRef = ref<Ref | null>(null)
 
 	
 // se storeToRefs to ensure that the associated part can be re-rendered after the store is modified
-//const { promptList: promptTemplate } = storeToRefs<any>(promptStore)
-
+// const { promptList: promptTemplate } = storeToRefs<any>(promptStore)
+const { promptList: promptTemplate } = storeToRefs(promptStore);
 // Refresh the page for unknown reasons, the loading status will not reset, reset manually
 dataSources.value.forEach((item, index) => {
   if (item.loading)
