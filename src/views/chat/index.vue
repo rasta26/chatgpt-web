@@ -4,7 +4,7 @@ import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { NAutoComplete, NButton, NInput, useDialog, useMessage } from 'naive-ui'
-import { toPng } from 'html-to-image'
+import html2canvas from 'html2canvas'
 import { Message } from './components'
 import { useScroll } from './hooks/useScroll'
 import { useChat } from './hooks/useChat'
@@ -41,7 +41,7 @@ const loading = ref<boolean>(false)
 const inputRef = ref<Ref | null>(null)
 
 // 添加PromptStore
-const promptStore = usePromptStore()
+ const promptStore = usePromptStore()
 
 // 使用storeToRefs，保证store修改后，联想部分能够重新渲染
 const { promptList: promptTemplate } = storeToRefs<any>(promptStore)
@@ -93,7 +93,7 @@ async function onConversation() {
     +uuid,
     {
       dateTime: new Date().toLocaleString(),
-      text: t('chat.thinking'),
+      text: '',
       loading: true,
       inversion: false,
       error: false,
@@ -327,13 +327,17 @@ function handleExport() {
       try {
         d.loading = true
         const ele = document.getElementById('image-wrapper')
-        const imgUrl = await toPng(ele as HTMLDivElement)
+        const canvas = await html2canvas(ele as HTMLDivElement, {
+          useCORS: true,
+        })
+        const imgUrl = canvas.toDataURL('image/png')
         const tempLink = document.createElement('a')
         tempLink.style.display = 'none'
         tempLink.href = imgUrl
         tempLink.setAttribute('download', 'chat-shot.png')
         if (typeof tempLink.download === 'undefined')
           tempLink.setAttribute('target', '_blank')
+
         document.body.appendChild(tempLink)
         tempLink.click()
         document.body.removeChild(tempLink)
@@ -404,9 +408,9 @@ function handleStop() {
   }
 }
 
-// 可优化部分
-// 搜索选项计算，这里使用value作为索引项，所以当出现重复value时渲染异常(多项同时出现选中效果)
-// 理想状态下其实应该是key作为索引项,但官方的renderOption会出现问题，所以就需要value反renderLabel实现
+// Optimizable parts
+// Search option calculation, here use value as index item, so when duplicate value appears, rendering is abnormal (multiple items appear selected at the same time)
+// Ideally, the key should be used as the index item, but the official renderOption will have problems, so the value needs to be reversed to renderLabel.
 const searchOptions = computed(() => {
   if (prompt.value.startsWith('/')) {
     return promptTemplate.value.filter((item: { key: string }) => item.key.toLowerCase().includes(prompt.value.substring(1).toLowerCase())).map((obj: { value: any }) => {
@@ -421,7 +425,7 @@ const searchOptions = computed(() => {
   }
 })
 
-// value反渲染key
+// value reverse rendering key
 const renderOption = (option: { label: string }) => {
   for (const i of promptTemplate.value) {
     if (i.value === option.label)
@@ -465,52 +469,51 @@ onUnmounted(() => {
       v-if="isMobile"
       :using-context="usingContext"
       @export="handleExport"
-      @handle-clear="handleClear"
+      @toggle-using-context="toggleUsingContext"
     />
     <main class="flex-1 overflow-hidden">
       <div id="scrollRef" ref="scrollRef" class="h-full overflow-hidden overflow-y-auto">
         <div
+          id="image-wrapper"
           class="w-full max-w-screen-xl m-auto dark:bg-[#101014]"
           :class="[isMobile ? 'p-2' : 'p-4']"
         >
-          <div id="image-wrapper" class="relative">
-            <template v-if="!dataSources.length">
-              <div class="flex items-center justify-center mt-4 text-center text-neutral-300">
-                <SvgIcon icon="ri:bubble-chart-fill" class="mr-2 text-3xl" />
-                <span>{{ t('chat.newChatTitle') }}</span>
+          <template v-if="!dataSources.length">
+            <div class="flex items-center justify-center mt-4 text-center text-neutral-300">
+              <SvgIcon icon="ri:bubble-chart-fill" class="mr-2 text-3xl" />
+              <span>Aha~</span>
+            </div>
+          </template>
+          <template v-else>
+            <div>
+              <Message
+                v-for="(item, index) of dataSources"
+                :key="index"
+                :date-time="item.dateTime"
+                :text="item.text"
+                :inversion="item.inversion"
+                :error="item.error"
+                :loading="item.loading"
+                @regenerate="onRegenerate(index)"
+                @delete="handleDelete(index)"
+              />
+              <div class="sticky bottom-0 left-0 flex justify-center">
+                <NButton v-if="loading" type="warning" @click="handleStop">
+                  <template #icon>
+                    <SvgIcon icon="ri:stop-circle-line" />
+                  </template>
+									{{ t('common.stopResponding') }}
+                </NButton>
               </div>
-            </template>
-            <template v-else>
-              <div>
-                <Message
-                  v-for="(item, index) of dataSources"
-                  :key="index"
-                  :date-time="item.dateTime"
-                  :text="item.text"
-                  :inversion="item.inversion"
-                  :error="item.error"
-                  :loading="item.loading"
-                  @regenerate="onRegenerate(index)"
-                  @delete="handleDelete(index)"
-                />
-                <div class="sticky bottom-0 left-0 flex justify-center">
-                  <NButton v-if="loading" type="warning" @click="handleStop">
-                    <template #icon>
-                      <SvgIcon icon="ri:stop-circle-line" />
-                    </template>
-                    {{ t('common.stopResponding') }}
-                  </NButton>
-                </div>
-              </div>
-            </template>
-          </div>
+            </div>
+          </template>
         </div>
       </div>
     </main>
     <footer :class="footerClass">
       <div class="w-full max-w-screen-xl m-auto">
         <div class="flex items-center justify-between space-x-2">
-          <HoverButton v-if="!isMobile" @click="handleClear">
+          <HoverButton @click="handleClear">
             <span class="text-xl text-[#4f555e] dark:text-white">
               <SvgIcon icon="ri:delete-bin-line" />
             </span>
@@ -520,7 +523,7 @@ onUnmounted(() => {
               <SvgIcon icon="ri:download-2-line" />
             </span>
           </HoverButton>
-          <HoverButton @click="toggleUsingContext">
+          <HoverButton v-if="!isMobile" @click="toggleUsingContext">
             <span class="text-xl" :class="{ 'text-[#4b9e5f]': usingContext, 'text-[#a8071a]': !usingContext }">
               <SvgIcon icon="ri:chat-history-line" />
             </span>
