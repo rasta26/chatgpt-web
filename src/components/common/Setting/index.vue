@@ -40,7 +40,7 @@ const show = computed({
     <div>
       <NTabs v-model:value="active" type="line" animated>
         <NTabPane name="General" tab="General">
-          <template #tab>
+          <template tab>
             <SvgIcon class="text-lg" icon="ri:file-user-line" />
             <span class="ml-2">{{ $t('setting.general') }}</span>
           </template>
@@ -49,7 +49,7 @@ const show = computed({
           </div>
         </NTabPane>
         <NTabPane v-if="isChatGPTAPI" name="Advanced" tab="Advanced">
-          <template #tab>
+          <template tab>
             <SvgIcon class="text-lg" icon="ri:equalizer-line" />
             <span class="ml-2">{{ $t('setting.advanced') }}</span>
           </template>
@@ -58,7 +58,7 @@ const show = computed({
           </div>
         </NTabPane>
         <NTabPane name="Config" tab="Config">
-          <template #tab>
+          <template tab>
             <SvgIcon class="text-lg" icon="ri:list-settings-line" />
             <span class="ml-2">{{ $t('setting.config') }}</span>
           </template>
